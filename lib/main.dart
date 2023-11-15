@@ -29,13 +29,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 5,
       child: Scaffold(
         appBar: AppBar(
           title: const Text("CatLife"),
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.monitor_weight)),
+              Tab(icon: Icon(Icons.lunch_dining)),
               Tab(icon: Icon(Icons.restaurant)),
               Tab(icon: Icon(Icons.wc)),
               Tab(icon: Icon(Icons.android))
