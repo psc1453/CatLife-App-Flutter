@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import '../server_info.dart';
 
 class WeightTabView extends StatelessWidget {
@@ -20,7 +21,7 @@ class WeightTabView extends StatelessWidget {
       weight = 0;
       return;
     }
-    var url = Uri.http(SEVER_HOST, 'tables/weight/add_weight_record');
+    var url = Uri.http(SERVER_HOST, 'tables/weight/add_weight_record');
     var to_send = json.encode({"weight": weight});
     try {
       var response_post = await http.post(url,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+
 import '../server_info.dart';
 
 class StoolTabView extends StatelessWidget {
@@ -9,7 +10,7 @@ class StoolTabView extends StatelessWidget {
   String message = '';
 
   Future<void> submit_stool_record() async {
-    var url = Uri.http(SEVER_HOST, 'tables/stool/add_stool_record');
+    var url = Uri.http(SERVER_HOST, 'tables/stool/add_stool_record');
     var to_send = json.encode({});
     try {
       var response_post = await http.post(url,
@@ -45,7 +46,7 @@ class StoolTabView extends StatelessWidget {
                   children: [
                     Text(message),
                     Padding(
-                      padding: EdgeInsets.only(top: 50),
+                      padding: const EdgeInsets.only(top: 50),
                       child: Icon(
                         status == 'Success!'
                             ? Icons.check_circle
