@@ -11,7 +11,7 @@ class FoodTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: FoodListTableView(),
     );
   }
@@ -62,10 +62,52 @@ class FoodListTableViewState extends State<FoodListTableView> {
     }
   }
 
+  Future<void> add_food_to_list(Food food) async {
+    var url = Uri.http(SERVER_HOST, 'tables/food/add_food_record');
+    var to_send = json.encode({
+      "food_brand": food.brand,
+      "food_name": food.name,
+      "food_category": food.category,
+      "food_unit": food.unit
+    });
+    try {
+      var response_post = await http.post(url,
+          headers: {'Content-Type': 'application/json;charset=utf-8'},
+          body: to_send);
+      final response = response_post.body;
+      final Map<String, dynamic> response_dict = json.decode(response);
+      final response_message = response_dict['message'];
+      if (response_message == "ok") {
+        status = "Success!";
+        message = "New food inserted today!";
+      } else {
+        status = "Failed!";
+        message = response_message;
+      }
+    } catch (error) {
+      status = "Failed!";
+      message = "HTTP request failed!";
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     get_food_list();
+  }
+
+  Future<void> show_food_adding_dialog() async {
+    Food? new_food = await showAdaptiveDialog(
+        context: context,
+        builder: (context) => Dialog.fullscreen(
+              child: FoodListAddingDialogView(),
+            ));
+    if (new_food != null) {
+      add_food_to_list(new_food);
+      setState(() {
+        get_food_list();
+      });
+    }
   }
 
   @override
@@ -79,11 +121,94 @@ class FoodListTableViewState extends State<FoodListTableView> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.refresh),
+        child: const Icon(Icons.add),
         onPressed: () {
-          get_food_list();
+          show_food_adding_dialog();
         },
       ),
+    );
+  }
+}
+
+class Food {
+  final String brand;
+  final String name;
+  final String category;
+  final String unit;
+
+  Food(
+      {this.brand = '',
+      required this.name,
+      required this.category,
+      required this.unit});
+}
+
+class FoodListAddingDialogView extends StatelessWidget {
+  TextEditingController brandTextFieldController = TextEditingController();
+  TextEditingController nameTextFieldController = TextEditingController();
+  TextEditingController categoryTextFieldController = TextEditingController();
+  TextEditingController unitTextFieldController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          tooltip: 'Close Dialog',
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text("Add a Food"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            tooltip: 'Save Data',
+            onPressed: () => Navigator.pop(
+                context,
+                Food(
+                    brand: brandTextFieldController.text,
+                    name: nameTextFieldController.text,
+                    category: categoryTextFieldController.text,
+                    unit: unitTextFieldController.text)),
+          ),
+        ],
+      ),
+      body: Center(
+          child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: "Brand?",
+                border: OutlineInputBorder(),
+              ),
+              controller: brandTextFieldController,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: "Name?",
+                border: OutlineInputBorder(),
+              ),
+              controller: nameTextFieldController,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: "Category?",
+                border: OutlineInputBorder(),
+              ),
+              controller: categoryTextFieldController,
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                labelText: "Unit?",
+                border: OutlineInputBorder(),
+              ),
+              controller: unitTextFieldController,
+            ),
+          ],
+        ),
+      )),
     );
   }
 }
