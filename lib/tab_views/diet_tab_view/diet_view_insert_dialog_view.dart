@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-import '../../DateTimePicker.dart';
+import '../../date_time_picker.dart';
 import '../../server_info.dart';
-import 'DietClass.dart';
+import 'diet_class.dart';
 
-class DietAddingDialogView extends StatefulWidget {
+class DietViewInsertDialogView extends StatefulWidget {
+  const DietViewInsertDialogView({super.key});
+
   @override
-  State<StatefulWidget> createState() => DietAddingDialogViewState();
+  State<StatefulWidget> createState() => DietViewInsertDialogViewState();
 }
 
-class DietAddingDialogViewState extends State<DietAddingDialogView> {
+class DietViewInsertDialogViewState extends State<DietViewInsertDialogView> {
   TextEditingController dateTextFieldController = TextEditingController(
       text: DateFormat('yyyy-MM-dd').format(DateTime.now()));
   TextEditingController timeTextFieldController = TextEditingController(
@@ -23,92 +25,89 @@ class DietAddingDialogViewState extends State<DietAddingDialogView> {
   String status = '';
   String message = '';
 
-  Map<String, dynamic> food_table = {};
+  Map<String, dynamic> foodTable = {};
 
-  List<String> food_table_heads = [''];
-  List<List> food_table_records = [
+  List<String> foodTableHeads = [''];
+  List<List> foodTableRecords = [
     [0, '']
   ];
 
-  List<String> food_list = [];
+  List<String> foodList = [];
 
-  String? diet_timestamp;
-  int? selected_food_id;
-  double? food_quantity;
+  String? dietTimeStamp;
+  int? selectedFoodID;
+  double? foodQuantity;
 
-  Future<void> get_food_id_products_list() async {
+  Future<void> getFoodList() async {
     var url = Uri.http(SERVER_HOST, 'tables/food/get_full_food_products_table');
     try {
-      var response_get =
+      var responseGet =
           await http.get(url, headers: {'Accept': 'application/json'});
-      final response_bytes = response_get.bodyBytes;
-      final Map<String, dynamic> response_dict =
-          json.decode(utf8.decode(response_bytes));
+      final responseBytes = responseGet.bodyBytes;
+      final Map<String, dynamic> responseDict =
+          json.decode(utf8.decode(responseBytes));
 
-      food_table = response_dict;
-      food_table_heads = food_table['column_names'].cast<String>();
-      food_table_records = food_table['records'].cast<List>();
+      foodTable = responseDict;
+      foodTableHeads = foodTable['column_names'].cast<String>();
+      foodTableRecords = foodTable['records'].cast<List>();
 
       status = "Success!";
       message = "New urine record inserted!";
-      food_list = List<String>.generate(
-          food_table_records.length, (index) => food_table_records[index][1]);
+      foodList = List<String>.generate(
+          foodTableRecords.length, (index) => foodTableRecords[index][1]);
       setState(() {});
     } catch (error) {
       status = "Failed!";
       message = "HTTP request failed!";
-      print(error);
     }
-    print(food_table_records);
   }
 
-  Future<void> submit_diet_record() async {
+  Future<void> addDietRecord() async {
     try {
-      food_quantity = double.parse(quantityFieldController.text);
+      foodQuantity = double.parse(quantityFieldController.text);
     } catch (error) {
       status = "Failed!";
       message = "Cannot convert input to Float!";
-      food_quantity = 0;
+      foodQuantity = 0;
       return;
     }
     var url = Uri.http(SERVER_HOST, 'tables/diet/add_diet_record');
-    var to_send = '';
-    diet_timestamp =
+    var toSend = '';
+    dietTimeStamp =
         '${dateTextFieldController.text} ${timeTextFieldController.text}';
-    if (food_quantity != null &&
-        diet_timestamp != null &&
-        selected_food_id != null) {
-      to_send = json.encode({
-        "food_id": selected_food_id,
-        "food_quantity": food_quantity,
-        "diet_timestamp": diet_timestamp
+    if (foodQuantity != null &&
+        dietTimeStamp != null &&
+        selectedFoodID != null) {
+      toSend = json.encode({
+        "food_id": selectedFoodID,
+        "food_quantity": foodQuantity,
+        "diet_timestamp": dietTimeStamp
       });
     }
     try {
-      var response_post = await http.post(url,
-          headers: {'Content-Type': 'application/json'}, body: to_send);
-      final response = response_post.body;
-      final Map<String, dynamic> response_dict = json.decode(response);
-      final response_message = response_dict['message'];
-      if (response_message == "ok") {
+      var responsePost = await http.post(url,
+          headers: {'Content-Type': 'application/json'}, body: toSend);
+      final response = responsePost.body;
+      final Map<String, dynamic> responseDict = json.decode(response);
+      final responseMessage = responseDict['message'];
+      if (responseMessage == "ok") {
         status = "Success!";
         message = "New diet record inserted!";
       } else {
         status = "Failed!";
-        message = response_message;
+        message = responseMessage;
       }
     } catch (error) {
       status = "Failed!";
       message = "HTTP request failed!";
     }
-    print(message);
   }
 
   @override
   void initState() {
     super.initState();
 
-    get_food_id_products_list();
+    getFoodList();
   }
 
   @override
@@ -126,12 +125,12 @@ class DietAddingDialogViewState extends State<DietAddingDialogView> {
             icon: const Icon(Icons.save),
             tooltip: 'Save Date',
             onPressed: () => Navigator.pop(context,
-                Diet(timestamp: DateTime.now(), food_id: 1, quantity: 10)),
+                Diet(timeStamp: DateTime.now(), foodID: 1, foodQuantity: 10)),
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             DateTimePicker(
@@ -143,9 +142,9 @@ class DietAddingDialogViewState extends State<DietAddingDialogView> {
             Flexible(
                 child: DropdownMenu<int>(
                     onSelected: (int? id) {
-                      selected_food_id = id;
+                      selectedFoodID = id;
                     },
-                    dropdownMenuEntries: food_table_records
+                    dropdownMenuEntries: foodTableRecords
                         .map<DropdownMenuEntry<int>>((record) =>
                             DropdownMenuEntry(
                                 value: record[0], label: record[1]))
@@ -162,9 +161,9 @@ class DietAddingDialogViewState extends State<DietAddingDialogView> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.save),
+        child: const Icon(Icons.save),
         onPressed: () {
-          submit_diet_record().then((value) {
+          addDietRecord().then((value) {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(

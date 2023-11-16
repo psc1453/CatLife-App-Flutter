@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../DynamicDataTable.dart';
+import '../refreshable_data_table.dart';
 import '../server_info.dart';
 
 class FoodTabView extends StatelessWidget {
@@ -29,32 +29,32 @@ class FoodListTableViewState extends State<FoodListTableView> {
   String status = '';
   String message = '';
 
-  Map<String, dynamic> food_table = {};
+  Map<String, dynamic> foodTable = {};
 
-  List<String> food_table_heads = [''];
-  List<List> food_table_records = [
+  List<String> foodTableHeads = [''];
+  List<List> foodTableRecords = [
     ['']
   ];
 
-  List<String> food_list = [];
+  List<String> foodList = [];
 
-  Future<void> get_food_list() async {
+  Future<void> getFoodList() async {
     var url = Uri.http(SERVER_HOST, 'tables/food/get_full_food_products_table');
     try {
-      var response_get =
+      var responseGet =
           await http.get(url, headers: {'Accept': 'application/json'});
-      final response_bytes = response_get.bodyBytes;
-      final Map<String, dynamic> response_dict =
-          json.decode(utf8.decode(response_bytes));
+      final responseBytes = responseGet.bodyBytes;
+      final Map<String, dynamic> responseDict =
+          json.decode(utf8.decode(responseBytes));
 
-      food_table = response_dict;
-      food_table_heads = food_table['column_names'].cast<String>();
-      food_table_records = food_table['records'].cast<List>();
+      foodTable = responseDict;
+      foodTableHeads = foodTable['column_names'].cast<String>();
+      foodTableRecords = foodTable['records'].cast<List>();
 
       status = "Success!";
       message = "New urine record inserted!";
-      food_list = List<String>.generate(
-          food_table_records.length, (index) => food_table_records[index][1]);
+      foodList = List<String>.generate(
+          foodTableRecords.length, (index) => foodTableRecords[index][1]);
       setState(() {});
     } catch (error) {
       status = "Failed!";
@@ -63,27 +63,27 @@ class FoodListTableViewState extends State<FoodListTableView> {
     }
   }
 
-  Future<void> add_food_to_list(Food food) async {
+  Future<void> addFoodRecord(Food food) async {
     var url = Uri.http(SERVER_HOST, 'tables/food/add_food_record');
-    var to_send = json.encode({
+    var toSend = json.encode({
       "food_brand": food.brand,
       "food_name": food.name,
       "food_category": food.category,
       "food_unit": food.unit
     });
     try {
-      var response_post = await http.post(url,
+      var responsePost = await http.post(url,
           headers: {'Content-Type': 'application/json;charset=utf-8'},
-          body: to_send);
-      final response = response_post.body;
-      final Map<String, dynamic> response_dict = json.decode(response);
-      final response_message = response_dict['message'];
-      if (response_message == "ok") {
+          body: toSend);
+      final response = responsePost.body;
+      final Map<String, dynamic> responseDict = json.decode(response);
+      final responseMessage = responseDict['message'];
+      if (responseMessage == "ok") {
         status = "Success!";
         message = "New food inserted!";
       } else {
         status = "Failed!";
-        message = response_message;
+        message = responseMessage;
       }
     } catch (error) {
       status = "Failed!";
@@ -94,17 +94,17 @@ class FoodListTableViewState extends State<FoodListTableView> {
   @override
   void initState() {
     super.initState();
-    get_food_list();
+    getFoodList();
   }
 
-  Future<void> show_food_adding_dialog() async {
-    Food? new_food = await showAdaptiveDialog(
+  Future<void> showFoodAddingDialog() async {
+    Food? newFood = await showAdaptiveDialog(
         context: context,
         builder: (context) => Dialog.fullscreen(
               child: FoodListAddingDialogView(),
             ));
-    if (new_food != null) {
-      add_food_to_list(new_food).then((value) {
+    if (newFood != null) {
+      addFoodRecord(newFood).then((value) {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -132,7 +132,7 @@ class FoodListTableViewState extends State<FoodListTableView> {
         );
       });
       setState(() {
-        get_food_list();
+        getFoodList();
       });
     }
   }
@@ -141,16 +141,16 @@ class FoodListTableViewState extends State<FoodListTableView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: RefreshIndicator(
-        onRefresh: get_food_list,
-        child: DynamicDataTable(
-          tabel_heads: food_table_heads,
-          table_rows: food_table_records,
+        onRefresh: getFoodList,
+        child: RefreshableDataTable(
+          tableHeads: foodTableHeads,
+          tableRows: foodTableRecords,
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          show_food_adding_dialog();
+          showFoodAddingDialog();
         },
       ),
     );

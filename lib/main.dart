@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'TabViews/DietTabView/DietTabView.dart';
-import 'TabViews/FoodTabView.dart';
-import 'TabViews/StoolTabView.dart';
-import 'TabViews/UrineTabView.dart';
-import 'TabViews/WeightTabView.dart';
+import 'tab_views/diet_tab_view/diet_tab_view.dart';
+import 'tab_views/food_tab_view.dart';
+import 'tab_views/stool_tab_view.dart';
+import 'tab_views/urine_tab_view.dart';
+import 'tab_views/weight_tab_view.dart';
 
 void main() => runApp(const CatLife());
 

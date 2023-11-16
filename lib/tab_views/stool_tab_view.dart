@@ -9,21 +9,21 @@ class StoolTabView extends StatelessWidget {
   String status = '';
   String message = '';
 
-  Future<void> submit_stool_record() async {
+  Future<void> addStoolRecord() async {
     var url = Uri.http(SERVER_HOST, 'tables/stool/add_stool_record');
-    var to_send = json.encode({});
+    var toSend = json.encode({});
     try {
-      var response_post = await http.post(url,
-          headers: {'Content-Type': 'application/json'}, body: to_send);
-      final response = response_post.body;
-      final Map<String, dynamic> response_dict = json.decode(response);
-      final response_message = response_dict['message'];
-      if (response_message == "ok") {
+      var responsePost = await http.post(url,
+          headers: {'Content-Type': 'application/json'}, body: toSend);
+      final response = responsePost.body;
+      final Map<String, dynamic> responseDict = json.decode(response);
+      final responseMessage = responseDict['message'];
+      if (responseMessage == "ok") {
         status = "Success!";
         message = "New stool record inserted!";
       } else {
         status = "Failed!";
-        message = response_message;
+        message = responseMessage;
       }
     } catch (error) {
       status = "Failed!";
@@ -36,7 +36,7 @@ class StoolTabView extends StatelessWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          submit_stool_record().then((value) {
+          addStoolRecord().then((value) {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(

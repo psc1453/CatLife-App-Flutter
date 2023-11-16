@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../DynamicDataTable.dart';
+import '../../refreshable_data_table.dart';
 
 class DietTableView extends StatefulWidget {
+  const DietTableView({super.key});
+
   @override
   State<StatefulWidget> createState() => DietTableViewState();
 }
@@ -10,9 +12,9 @@ class DietTableView extends StatefulWidget {
 class DietTableViewState extends State<DietTableView> {
   @override
   Widget build(BuildContext context) {
-    return DynamicDataTable(tabel_heads: [
+    return RefreshableDataTable(tableHeads: [
       "tabel_heads"
-    ], table_rows: [
+    ], tableRows: [
       ["hello"]
     ]);
   }

@@ -65,7 +65,6 @@ class DateTimePicker extends StatelessWidget {
                   parsedTime = DateFormat("HH:mm")
                       .parse(pickedTime.format(context).toString());
                 }
-                print(parsedTime);
                 String formattedTime =
                     DateFormat('HH:mm:ss').format(parsedTime);
                 timeTextFieldController.text = formattedTime;
