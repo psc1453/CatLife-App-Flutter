@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'TabViews/DietTabView/DietTabView.dart';
 import 'TabViews/FoodTabView.dart';
 import 'TabViews/StoolTabView.dart';
 import 'TabViews/UrineTabView.dart';
@@ -48,7 +49,7 @@ class HomePage extends StatelessWidget {
           children: [
             WeightTabView(),
             const FoodTabView(),
-            const Icon(Icons.restaurant),
+            DietTabView(),
             UrineTabView(),
             StoolTabView(),
           ],

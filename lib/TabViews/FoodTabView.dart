@@ -12,6 +12,7 @@ class FoodTabView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      // TODO: Move float button here.
       body: FoodListTableView(),
     );
   }
@@ -79,7 +80,7 @@ class FoodListTableViewState extends State<FoodListTableView> {
       final response_message = response_dict['message'];
       if (response_message == "ok") {
         status = "Success!";
-        message = "New food inserted today!";
+        message = "New food inserted!";
       } else {
         status = "Failed!";
         message = response_message;
@@ -103,7 +104,33 @@ class FoodListTableViewState extends State<FoodListTableView> {
               child: FoodListAddingDialogView(),
             ));
     if (new_food != null) {
-      add_food_to_list(new_food);
+      add_food_to_list(new_food).then((value) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(status),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(message),
+                Padding(
+                  padding: const EdgeInsets.only(top: 50),
+                  child: Icon(
+                    status == 'Success!' ? Icons.check_circle : Icons.cancel,
+                    size: 80,
+                  ),
+                )
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.pop(context, 'OK'),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      });
       setState(() {
         get_food_list();
       });
