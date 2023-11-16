@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../refreshable_data_table.dart';
+import '../../Widgets/refreshable_data_table.dart';
 
-class DietTableView extends StatefulWidget {
+class DietTableView extends StatelessWidget {
   const DietTableView({super.key});
 
   @override
-  State<StatefulWidget> createState() => DietTableViewState();
-}
-
-class DietTableViewState extends State<DietTableView> {
-  @override
   Widget build(BuildContext context) {
-    return RefreshableDataTable(tableHeads: [
+    return RefreshableDataTable(refreshHandler: () async {}, tableHeads: [
       "tabel_heads"
     ], tableRows: [
       ["hello"]
