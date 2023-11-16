@@ -54,7 +54,7 @@ class FoodTabViewState extends State<FoodTabView> {
     }
   }
 
-  Future<void> showDietAddingDialog() async {
+  Future<void> showFoodAddingDialog() async {
     Food? newFood = await showAdaptiveDialog(
         context: context,
         builder: (context) => Dialog.fullscreen(
@@ -97,7 +97,7 @@ class FoodTabViewState extends State<FoodTabView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          showDietAddingDialog();
+          showFoodAddingDialog();
         },
         child: const Icon(Icons.add),
       ),
