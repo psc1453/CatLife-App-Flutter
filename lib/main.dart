@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'tab_views/diet_tab_view/diet_tab_view.dart';
-import 'tab_views/food_tab_view.dart';
+import 'tab_views/food_tab_view/food_tab_view.dart';
 import 'tab_views/stool_tab_view.dart';
 import 'tab_views/urine_tab_view.dart';
 import 'tab_views/weight_tab_view.dart';

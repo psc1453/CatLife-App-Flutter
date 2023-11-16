@@ -1,70 +1,22 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import '../server_info.dart';
+import '../utils/add_record.dart';
+import '../utils/show_submit_alert_dialog.dart';
 
 class UrineTabView extends StatelessWidget {
-  String status = '';
-  String message = '';
-
-  Future<void> addUrineRecord() async {
-    var url = Uri.http(SERVER_HOST, 'tables/urine/add_urine_record');
-    var toSend = json.encode({});
-    try {
-      var responsePost = await http.post(url,
-          headers: {'Content-Type': 'application/json'}, body: toSend);
-      final response = responsePost.body;
-      final Map<String, dynamic> responseDict = json.decode(response);
-      final responseMessage = responseDict['message'];
-      if (responseMessage == "ok") {
-        status = "Success!";
-        message = "New urine record inserted!";
-      } else {
-        status = "Failed!";
-        message = responseMessage;
-      }
-    } catch (error) {
-      status = "Failed!";
-      message = "HTTP request failed!";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          addUrineRecord().then((value) {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text(status),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(message),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 50),
-                      child: Icon(
-                        status == 'Success!'
-                            ? Icons.check_circle
-                            : Icons.cancel,
-                        size: 80,
-                      ),
-                    )
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, 'OK'),
-                    child: const Text('OK'),
-                  ),
-                ],
-              ),
-            );
-          });
+          addRecord(
+                  host: SERVER_HOST,
+                  apiPath: 'tables/urine/add_urine_record',
+                  successMessage: "New urine record inserted!",
+                  dictToSend: {})
+              .then((requestResult) => showSubmitAlertDialog(
+                  context: context, requestResult: requestResult));
         },
         child: const Icon(Icons.wc),
       ),

@@ -52,6 +52,7 @@ class DateTimePicker extends StatelessWidget {
             ),
             readOnly: true,
             onTap: () async {
+              BuildContext contextCopy = context;
               TimeOfDay? pickedTime = await showTimePicker(
                 context: context,
                 initialTime: TimeOfDay.now(),
@@ -59,11 +60,15 @@ class DateTimePicker extends StatelessWidget {
               if (pickedTime != null) {
                 DateTime parsedTime = DateTime.now();
                 try {
-                  parsedTime = DateFormat("hh:mm a")
-                      .parse(pickedTime.format(context).toString());
+                  if (context.mounted) {
+                    parsedTime = DateFormat("hh:mm a")
+                        .parse(pickedTime.format(contextCopy).toString());
+                  }
                 } on FormatException catch (_) {
-                  parsedTime = DateFormat("HH:mm")
-                      .parse(pickedTime.format(context).toString());
+                  if (context.mounted) {
+                    parsedTime = DateFormat("HH:mm")
+                        .parse(pickedTime.format(contextCopy).toString());
+                  }
                 }
                 String formattedTime =
                     DateFormat('HH:mm:ss').format(parsedTime);
